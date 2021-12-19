@@ -1,0 +1,1101 @@
+#
+#Github https://github.com/MCGameSK/Fish
+#
+
+
+
+import:
+    org.bukkit.inventory.ItemFlag
+
+
+
+options:
+    ChanceXp: 0.2
+    ChanceBook: 0.3
+    ChanceTreasure: 0.06
+    ChanceMoney: 0.14
+    ChanceVoidfish: 25
+    ChanceOceanFish: 8
+    ChanceBaguette: 0.6
+    ChanceOtherFish: 20
+    ChanceFishFresh: 7
+    ChanceFishUnique: 0.5
+
+    HotTimeDelay: 10 #minutes
+    HotTimeRemaining: 180 #seconds
+
+    ChanceContest: 20 #chance out of 100
+    DelayContest: 10 #minutes
+    NeedPlayerAmountContest: 1
+
+
+
+on load:
+
+    delete {contestOpen}
+    delete {contestRemaining}
+    delete {contestFish}
+    delete {contestCurrentReward}
+    delete {contestLeadPlayer}
+    delete {contestPlayerGoal::*}
+
+    set {cod::normal} to cod named "&7갓잡은 &f생대구" with lore "&7&l&r " and "&8신선한 생대구" and " "
+    set {cod::fresh} to cod named "&9펄떡이는 &f생대구" with lore "&7&l&r " and "&8가장 신선한 생대구" and " "
+    set {cod::unique} to cod of unbreaking named "&d흔치않은 &f생대구" with lore "&7&l&r " and "&8최고 품질의 생대구" and " "
+    set {_meta} to {cod::unique}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {cod::unique}.setItemMeta({_meta})
+
+    set {salmon::normal} to salmon named "&7갓잡은 &f생연어" with lore "&7&l&r " and "&8신선한 생연어" and " "
+    set {salmon::fresh} to salmon named "&9펄떡이는 &f생연어" with lore "&7&l&r " and "&8가장 신선한 생연어" and " "
+    set {salmon::unique} to salmon of unbreaking named "&d흔치않은 &f생연어" with lore "&7&l&r " and "&8최고 품질의 생연어" and " "
+    set {_meta} to {salmon::unique}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {salmon::unique}.setItemMeta({_meta})
+
+    set {tropical::normal} to tropical fish named "&7갓잡은 &f열대어" with lore "&7&l&r " and "&8신선한 열대어" and " "
+    set {tropical::fresh} to tropical fish named "&9펄떡이는 &f열대어" with lore "&7&l&r " and "&8가장 신선한 열대어" and " "
+    set {tropical::unique} to tropical fish of unbreaking named "&d흔치않은 &f열대어" with lore "&7&l&r " and "&8최고 품질의 열대어" and " "
+    set {_meta} to {tropical::unique}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {tropical::unique}.setItemMeta({_meta})
+
+    set {pufferfish::normal} to pufferfish named "&7갓잡은 &f복어" with lore "&7&l&r " and "&8신선한 복어" and " "
+    set {pufferfish::fresh} to pufferfish named "&9펄떡이는 &f복어" with lore "&7&l&r " and "&8가장 신선한 복어" and " "
+    set {pufferfish::unique} to pufferfish of unbreaking named "&d흔치않은 &f복어" with lore "&7&l&r " and "&8최고 품질의 복어" and " "
+    set {_meta} to {pufferfish::unique}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {pufferfish::unique}.setItemMeta({_meta})
+
+    set {squid::normal} to ink sac named "&7갓잡은 &f오징어" with lore "&7&l&r " and "&8신선한 오징어" and " "
+    set {squid::fresh} to ink sac named "&9펄떡이는 &f오징어" with lore "&7&l&r " and "&8가장 신선한 오징어" and " "
+    set {squid::unique} to glow ink sac of unbreaking named "&d흔치않은 &f오징어" with lore "&7&l&r " and "&8최고 품질의 오징어" and " "
+    set {_meta} to {squid::unique}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {squid::unique}.setItemMeta({_meta})
+
+    set {mussel::normal} to black dye named "&7갓잡은 &f홍합" with lore "&7&l&r " and "&8신선한 홍합" and " "
+    set {mussel::fresh} to black dye named "&9남해 &f홍합" with lore "&7&l&r " and "&8가장 신선한 홍합" and " "
+    set {mussel::unique} to black dye of unbreaking named "&d흔치않은 &f홍합" with lore "&7&l&r " and "&8최고 품질의 홍합" and " "
+    set {_meta} to {mussel::unique}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {mussel::unique}.setItemMeta({_meta})
+
+    set {voidfish} to cooked salmon of curse of vanishing named "&5공허 물고기" with lore "&7&l&r " and "&8&kempty inside" and " "
+    set {voideel} to twisting vines of curse of vanishing named "&5공허 장어" with lore "&7&l&r " and "&8&kempty inside" and " "
+
+    set {seaGrapes} to warped roots of unbreaking named "&d바다포도" with lore "&7&l&r " and "&8식감원툴 해조류" and " "
+    set {_meta} to {seaGrapes}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {seaGrapes}.setItemMeta({_meta})
+
+    set {banger} to white candle of unbreaking named "&d뱅어" with lore "&7&l&r " and "&8촛국 먹고 아그그" and " "
+    set {_meta} to {banger}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {banger}.setItemMeta({_meta})
+
+    set {baguette} to bread of unbreaking named "&e과대망상증 지렁이" with lore "&7&l&r " and "&8자기가 바게트 빵이라고 생각함" and " "
+    set {_meta} to {baguette}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {baguette}.setItemMeta({_meta})
+
+    set {bucketSet::*} to {cod::normal}, {cod::fresh}, {salmon::normal}, {salmon::fresh}, {tropical::normal}, {tropical::fresh}, {pufferfish::normal}, {pufferfish::fresh}, {squid::normal}, {squid::fresh}, {mussel::normal} and {mussel::fresh}
+
+    set {contestStartCoupon} to paper of unbreaking named "&a&l낚시 대회 개최 쿠폰" with lore "&8&o우클시 낚시 대회를 강제로 개최합니다."
+    set {_meta} to {contestStartCoupon}.getItemMeta()
+    {_meta}.addItemFlags([ItemFlag.HIDE_ENCHANTS])
+    {contestStartCoupon}.setItemMeta({_meta})
+
+    delete {hotTime}
+    delete {hotTimeRemaining}
+    delete {hotTimeLocation}
+
+
+
+on place:
+    if 1 of player's tool is {voideel}:
+        cancel event
+    else if 1 of player's tool is {seaGrapes}:
+        cancel event
+    else if 1 of player's tool is {banger}:
+        cancel event
+
+    if 1 of player's offhand tool is {voideel}:
+        cancel event
+    else if 1 of player's offhand tool is {seaGrapes}:
+        cancel event
+    else if 1 of player's offhand tool is {banger}:
+        cancel event
+
+
+
+on bucket fill:
+    if distance between event-location and {hotTimeLocation} < 2:
+        cancel event
+        loop random integer between 3 and 7 times:
+            drop random integer between 1 and 3 of random element of {bucketSet::*} at {hotTimeLocation}
+        delete {hotTime}
+        delete {hotTimeRemaining}
+        delete {hotTimeLocation}
+
+
+
+on fish:
+
+    #if "%event.getState()%" is "IN_GROUND":
+
+        #set {_dir} to vector from player's location and location of event.getHook()
+        #add 3 to y of {_dir}
+        #push player {_dir} at speed standard length of {_dir} * 0.1
+
+    if "%event.getState()%" is "CAUGHT_FISH":
+
+
+    
+        set {_fish} to event.getCaught()
+
+
+
+        #Xp giving
+        if chance of {@ChanceXp}%:
+            set {_loc} to location at {_fish}
+            {_fish}.remove()
+
+            set {_dir} to vector from {_loc} and player's location
+            add 3 to y of {_dir}
+
+            loop 10 times:
+                drop 1000 xp at {_loc}
+                spawn bottle of enchanting at {_loc}
+                push last spawned entity {_dir} at speed standard length of {_dir} * 0.2
+                wait for 0.1 seconds
+
+            exit
+
+
+
+        #Book giving
+        if chance of {@ChanceBook}%:
+            if {books::*} is set:
+                set item of {_fish} to random element of {books::*}
+                broadcast "&d&l%player%가 책을 낚았습니다!"
+                play sound "entity.ender_eye.death" with volume 1 for all players
+                exit
+
+
+
+        #Treasure giving
+        if chance of {@ChanceTreasure}%:
+            if {treasures::*} is set:
+                set item of {_fish} to random element of {treasures::*}
+                broadcast "&d&l%player%가 보물을 낚았습니다!"
+                play sound "entity.ender_eye.death" with volume 1 for all players
+                exit
+
+
+
+        #Money giving
+        if chance of {@ChanceMoney}%:
+            if {money::*} is set:
+                set item of {_fish} to random element of {money::*}
+                broadcast "&d&l%player%가 돈을 낚았습니다!"
+                play sound "entity.ender_eye.death" with volume 1 for all players
+                exit
+
+
+
+        #Voidfish
+        if "%biome at event.getHook()%" contain "end" or "sky":
+            if chance of {@ChanceVoidfish}%:
+                if chance of 4%:
+                    set item of {_fish} to {voideel}
+                    broadcast "&d&l%player%가 공허 장어를 낚았습니다!"
+                    play sound "entity.ender_eye.death" with volume 1 for all players
+
+                    #Contest
+                    if {contestOpen} is true:
+                        if {contestFish} is item of {_fish}:
+
+                            add 1 to {contestPlayerGoal::%player's uuid%}
+                            set {_lead} to true
+                            loop {contestPlayerGoal::*}:
+                                if loop-index is not player's uuid:
+                                    if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                        set {_lead} to false
+                                
+                            if {_lead} is true:
+                                if {contestLeadPlayer} is not player:
+                                    broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                    set {contestLeadPlayer} to player
+                    #
+
+                    exit
+                set item of {_fish} to {voidfish}
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+
+
+        #DeepOceanFish
+        if "%biome at event.getHook()%" contain "deep":
+            if chance of {@ChanceOceanFish}%:
+                if chance of 6%:
+                    set item of {_fish} to {banger}
+                    broadcast "&d&l%player%가 뱅어를 낚았습니다!"
+                    play sound "entity.ender_eye.death" with volume 1 for all players
+
+                    #Contest
+                    if {contestOpen} is true:
+                        if {contestFish} is item of {_fish}:
+
+                            add 1 to {contestPlayerGoal::%player's uuid%}
+                            set {_lead} to true
+                            loop {contestPlayerGoal::*}:
+                                if loop-index is not player's uuid:
+                                    if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                        set {_lead} to false
+                                
+                            if {_lead} is true:
+                                if {contestLeadPlayer} is not player:
+                                    broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                    set {contestLeadPlayer} to player
+                    #
+
+                    exit
+                set item of {_fish} to {seaGrapes}
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit 
+
+
+
+        #Baguette
+        if chance of {@ChanceBaguette}%:
+            set item of {_fish} to {baguette}
+
+            #Contest
+            if {contestOpen} is true:
+                if {contestFish} is item of {_fish}:
+
+                    add 1 to {contestPlayerGoal::%player's uuid%}
+                    set {_lead} to true
+                    loop {contestPlayerGoal::*}:
+                        if loop-index is not player's uuid:
+                            if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                set {_lead} to false
+                        
+                    if {_lead} is true:
+                        if {contestLeadPlayer} is not player:
+                            broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                            set {contestLeadPlayer} to player
+            #
+
+            exit
+
+
+
+        #More fish
+        if chance of {@ChanceOtherFish}%:
+
+            set {_rndTemp} to random integer between 1 and 2
+
+            if {_rndTemp} is 1:
+                if chance of {@ChanceFishUnique}%:
+                    set item of {_fish} to {squid::unique}
+                    broadcast "&d&l%player%가 최고 품질의 오징어를 낚았습니다!"
+                    play sound "entity.ender_eye.death" with volume 1 for all players
+
+                    #Contest
+                    if {contestOpen} is true:
+                        if {contestFish} is item of {_fish}:
+
+                            add 1 to {contestPlayerGoal::%player's uuid%}
+                            set {_lead} to true
+                            loop {contestPlayerGoal::*}:
+                                if loop-index is not player's uuid:
+                                    if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                        set {_lead} to false
+                                
+                            if {_lead} is true:
+                                if {contestLeadPlayer} is not player:
+                                    broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                    set {contestLeadPlayer} to player
+                    #
+
+                    exit
+
+                if chance of {@ChanceFishFresh}%:
+                    set item of {_fish} to {squid::fresh}
+
+                    #Contest
+                    if {contestOpen} is true:
+                        if {contestFish} is item of {_fish}:
+
+                            add 1 to {contestPlayerGoal::%player's uuid%}
+                            set {_lead} to true
+                            loop {contestPlayerGoal::*}:
+                                if loop-index is not player's uuid:
+                                    if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                        set {_lead} to false
+                                
+                            if {_lead} is true:
+                                if {contestLeadPlayer} is not player:
+                                    broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                    set {contestLeadPlayer} to player
+                    #
+
+                    exit
+
+                set item of {_fish} to {squid::normal}
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+
+
+            if {_rndTemp} is 2:
+                if chance of {@ChanceFishUnique}%:
+                    set item of {_fish} to {mussel::unique}
+                    broadcast "&d&l%player%가 최고 품질의 홍합을 낚았습니다!"
+                    play sound "entity.ender_eye.death" with volume 1 for all players
+
+                    #Contest
+                    if {contestOpen} is true:
+                        if {contestFish} is item of {_fish}:
+
+                            add 1 to {contestPlayerGoal::%player's uuid%}
+                            set {_lead} to true
+                            loop {contestPlayerGoal::*}:
+                                if loop-index is not player's uuid:
+                                    if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                        set {_lead} to false
+                                
+                            if {_lead} is true:
+                                if {contestLeadPlayer} is not player:
+                                    broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                    set {contestLeadPlayer} to player
+                    #
+
+                    exit
+
+                if chance of {@ChanceFishFresh}%:
+                    set item of {_fish} to {mussel::fresh}
+
+                    #Contest
+                    if {contestOpen} is true:
+                        if {contestFish} is item of {_fish}:
+
+                            add 1 to {contestPlayerGoal::%player's uuid%}
+                            set {_lead} to true
+                            loop {contestPlayerGoal::*}:
+                                if loop-index is not player's uuid:
+                                    if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                        set {_lead} to false
+                                
+                            if {_lead} is true:
+                                if {contestLeadPlayer} is not player:
+                                    broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                    set {contestLeadPlayer} to player
+                    #
+
+                    exit
+
+                set item of {_fish} to {mussel::normal}
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+
+
+        #Vanilla fish
+        if item of {_fish} is cod:
+            if chance of {@ChanceFishUnique}%:
+                set item of {_fish} to {cod::unique}
+                broadcast "&d&l%player%가 최고 품질의 대구를 낚았습니다!"
+                play sound "entity.ender_eye.death" with volume 1 for all players
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+            if chance of {@ChanceFishFresh}%:
+                set item of {_fish} to {cod::fresh}
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+            set item of {_fish} to {cod::normal}
+
+            #Contest
+            if {contestOpen} is true:
+                if {contestFish} is item of {_fish}:
+
+                    add 1 to {contestPlayerGoal::%player's uuid%}
+                    set {_lead} to true
+                    loop {contestPlayerGoal::*}:
+                        if loop-index is not player's uuid:
+                            if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                set {_lead} to false
+                        
+                    if {_lead} is true:
+                        if {contestLeadPlayer} is not player:
+                            broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                            set {contestLeadPlayer} to player
+            #
+
+            exit
+
+
+
+        else if item of {_fish} is salmon:
+            if chance of {@ChanceFishUnique}%:
+                set item of {_fish} to {salmon::unique}
+                broadcast "&d&l%player%가 최고 품질의 연어를 낚았습니다!"
+                play sound "entity.ender_eye.death" with volume 1 for all players
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+            if chance of {@ChanceFishFresh}%:
+                set item of {_fish} to {salmon::fresh}
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+            set item of {_fish} to {salmon::normal}
+
+            #Contest
+            if {contestOpen} is true:
+                if {contestFish} is item of {_fish}:
+
+                    add 1 to {contestPlayerGoal::%player's uuid%}
+                    set {_lead} to true
+                    loop {contestPlayerGoal::*}:
+                        if loop-index is not player's uuid:
+                            if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                set {_lead} to false
+                        
+                    if {_lead} is true:
+                        if {contestLeadPlayer} is not player:
+                            broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                            set {contestLeadPlayer} to player
+            #
+
+            exit
+
+
+
+        else if item of {_fish} is tropical fish:
+            if chance of {@ChanceFishUnique}%:
+                set item of {_fish} to {tropical::unique}
+                broadcast "&d&l%player%가 최고 품질의 열대어를 낚았습니다!"
+                play sound "entity.ender_eye.death" with volume 1 for all players
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+            if chance of {@ChanceFishFresh}%:
+                set item of {_fish} to {tropical::fresh}
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+            set item of {_fish} to {tropical::normal}
+
+            #Contest
+            if {contestOpen} is true:
+                if {contestFish} is item of {_fish}:
+
+                    add 1 to {contestPlayerGoal::%player's uuid%}
+                    set {_lead} to true
+                    loop {contestPlayerGoal::*}:
+                        if loop-index is not player's uuid:
+                            if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                set {_lead} to false
+                        
+                    if {_lead} is true:
+                        if {contestLeadPlayer} is not player:
+                            broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                            set {contestLeadPlayer} to player
+            #
+
+            exit
+
+
+
+        else if item of {_fish} is pufferfish:
+            if chance of {@ChanceFishUnique}%:
+                set item of {_fish} to {pufferfish::unique}
+                broadcast "&d&l%player%가 최고 품질의 복어를 낚았습니다!"
+                play sound "entity.ender_eye.death" with volume 1 for all players
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+            if chance of {@ChanceFishFresh}%:
+                set item of {_fish} to {pufferfish::fresh}
+
+                #Contest
+                if {contestOpen} is true:
+                    if {contestFish} is item of {_fish}:
+
+                        add 1 to {contestPlayerGoal::%player's uuid%}
+                        set {_lead} to true
+                        loop {contestPlayerGoal::*}:
+                            if loop-index is not player's uuid:
+                                if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                    set {_lead} to false
+                            
+                        if {_lead} is true:
+                            if {contestLeadPlayer} is not player:
+                                broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                                set {contestLeadPlayer} to player
+                #
+
+                exit
+
+            set item of {_fish} to {pufferfish::normal}
+
+            #Contest
+            if {contestOpen} is true:
+                if {contestFish} is item of {_fish}:
+
+                    add 1 to {contestPlayerGoal::%player's uuid%}
+                    set {_lead} to true
+                    loop {contestPlayerGoal::*}:
+                        if loop-index is not player's uuid:
+                            if {contestPlayerGoal::%player's uuid%} <= loop-value:
+                                set {_lead} to false
+                        
+                    if {_lead} is true:
+                        if {contestLeadPlayer} is not player:
+                            broadcast "&e&l[ 낚시 대회 ] &f&o%player%이(가) 앞서고 있습니다."
+                            set {contestLeadPlayer} to player
+            #
+
+            exit
+
+
+
+on player's held item change:
+    if player's held item is fishing rod:
+        if {contestOpen} is true:
+            if {contestPlayerGoal::%player's uuid%} is set:
+                send action bar "%name of {contestFish}% &r&6&l: %{contestPlayerGoal::%player's uuid%}% &7&o[ %{contestRemaining}%분 남음 ]" to player
+            else:
+                send action bar "%name of {contestFish}% &r&6&l: 0 &7&o[ %{contestRemaining}%분 남음 ]" to player
+        else:
+            send action bar "&4&l진행중인 낚시대회가 없습니다" to player
+
+
+
+on right click:
+    if 1 of player's tool is {contestStartCoupon}:
+        cancel event
+
+        if {contestReward::*} is not set:
+            message "&c&o보상이 설정되지 않았습니다."
+            exit
+
+        if {contestOpen} is true:
+            message "&c&o낚시 대회가 이미 진행중입니다."
+            exit
+
+        set {_tempSlot} to player's tool
+        set {_i} to item amount of {_tempSlot} - 1
+        set player's tool to {_i} of {_tempSlot}
+
+        broadcast "&e&l%player%이(가) 낚시 대회를 개최합니다."
+        execute console command "/faContestForceStart"
+
+
+
+every 1 seconds:
+
+    #HotTime Location Fade
+    if {hotTime} is true:
+        remove 1 from {hotTimeRemaining}
+        if {hotTimeRemaining} <= 0:
+            delete {hotTime}
+            delete {hotTimeRemaining}
+            delete {hotTimeLocation}
+
+
+
+#Set HotTime Location
+every {@HotTimeDelay} minutes:
+    set {_targetPlayer} to random element of all players
+
+    loop all blocks in radius 10 around {_targetPlayer}:
+        if loop-block is water:
+            if block above loop-block is air:
+                if chance of 2%:
+                    set {hotTime} to true
+                    set {hotTimeRemaining} to {@HotTimeRemaining}
+                    set {hotTimeLocation} to loop-block's location
+                    exit
+
+
+
+#Bubble
+every 0.4 seconds:
+    if {hotTimeLocation} is set:
+        set {_rndLoc} to {hotTimeLocation}
+        set x-coord of {_rndLoc} to (random number between -0.5 and 0.5) + floor(x-coord of {_rndLoc}) + 0.5
+        set y-coord of {_rndLoc} to (random number between -0.5 and 0) + floor(y-coord of {_rndLoc}) + 1.5
+        set z-coord of {_rndLoc} to (random number between -0.5 and 0.5) + floor(z-coord of {_rndLoc}) + 0.5
+
+        show firework's spark at {_rndLoc}
+
+        if chance of 35%:
+            play sound "entity.fish.swim" with volume 0.4 at {_rndLoc}
+
+
+
+every {@DelayContest} minutes:
+    if chance of {@ChanceContest}%:
+        if amount of all players > {@NeedPlayerAmountContest}:
+            if {contestReward::*} is set:
+                if {contestOpen} is not set:
+                    set {contestOpen} to true
+
+                    set {contestCurrentReward} to random element of {contestReward::*}
+                    
+                    if chance of 95%:
+                        set {contestRemaining} to 2 * random integer between 5 and 8
+                        set {contestFish} to random element of {cod::normal}, {cod::fresh}, {salmon::normal}, {salmon::fresh}, {pufferfish::normal}, {squid::normal}, {mussel::normal}, {voidfish} and {seaGrapes}
+                    else:
+                        set {contestRemaining} to 2 * random integer between 10 and 15
+                        set {contestFish} to random element of {voideel}, {banger}, {cod::unique}, {salmon::unique}, {pufferfish::unique}, {tropical::unique}, {squid::unique}, {mussel::unique}, {baguette}, {pufferfish::fresh}, {tropical::normal}, {tropical::fresh}, {squid::fresh} and {mussel::fresh}
+
+                    broadcast "&e&l[ 낚시 대회 ]"
+                    broadcast " "
+                    broadcast "&a&o%{contestRemaining}%&e&l분 안에 &r%name of {contestFish}%&r&e&l 을(를) 가장 많이 잡은 사람이 우승"
+                    broadcast "&e&o보상: &r%name of {contestCurrentReward}% &e&oX %item amount of {contestCurrentReward}%"
+
+                    play sound "block.note_block.pling" with volume 1 and pitch 2 for all players
+
+
+
+every 1 minutes:
+    if {contestOpen} is true:
+        remove 1 from {contestRemaining}
+
+        if {contestRemaining} is 5:
+            if {contestLeadPlayer} is set:
+                broadcast "&e&l[ 낚시 대회 ] &c&o5&e&o분 남았습니다!"
+                broadcast " "
+                broadcast "&e&o목표 어종: &r%name of {contestFish}%"
+                broadcast "&e&o최고 점수: &r&o%{contestLeadPlayer}%"
+            else:
+                broadcast "&e&l[ 낚시 대회 ] &c&o5&e&o분 남았습니다!"
+                broadcast " "
+                broadcast "&e&o목표 어종: &r%name of {contestFish}%"
+                broadcast "&c&l참가자가 없습니다."
+        
+        if {contestRemaining} <= 0:
+
+            play sound "block.note_block.pling" with volume 1 and pitch 1.4 for all players
+
+            if {contestLeadPlayer} is set:
+                broadcast "&e&l[ 낚시 대회 ] &c&l종료"
+                broadcast " "
+                broadcast "&f&o%{contestLeadPlayer}% &a&l우승!"
+                broadcast "&f%{contestPlayerGoal::%{contestLeadPlayer}'s uuid%}% &e&o마리의 &r%name of {contestFish}%&e&o을(를) 잡았습니다."
+                broadcast "&e&o보상 지급: &r%name of {contestCurrentReward}% &e&oX %item amount of {contestCurrentReward}%"
+
+                if {contestLeadPlayer} has enough space for 1 of {contestCurrentReward}:
+                    give {contestLeadPlayer} {contestCurrentReward}
+                    message "&a&l인벤토리에 보상이 지급되었습니다." to {contestLeadPlayer}
+                else:
+                    drop {contestCurrentReward} at {contestLeadPlayer}'s head
+                    message "&a&l보상이 지급되었습니다. &c&l공간이 부족하여 &a&l아이템이 드랍됩니다." to {contestLeadPlayer}
+
+            else:
+                broadcast "&e&l[ 낚시 대회 ] &c&l종료, 우승자가 없습니다."
+
+            delete {contestOpen}
+            delete {contestRemaining}
+            delete {contestFish}
+            delete {contestCurrentReward}
+            delete {contestLeadPlayer}
+            delete {contestPlayerGoal::*}
+
+
+
+command /faBookAdd:
+    trigger:
+        if player is op:
+            add player's held item to {books::*}
+            message "&e&l책 보상 리스트에 추가됨: &f&o%player's held item%"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faBookList:
+    trigger:
+        if player is op:
+            message "&a&l책 보상 리스트"
+            loop {books::*}:
+                message "%loop-value%"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faBookDelete:
+    trigger:
+        if player is op:
+            delete {books::*}
+            message "&c&l책 보상 리스트 모두 제거됨"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faTreasureAdd:
+    trigger:
+        if player is op:
+            add player's held item to {treasures::*}
+            message "&e&l보물 보상 리스트에 추가됨: &f&o%player's held item%"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faTreasureList:
+    trigger:
+        if player is op:
+            message "&a&l보물 보상 리스트"
+            loop {treasures::*}:
+                message "%loop-value%"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faTreasureDelete:
+    trigger:
+        if player is op:
+            delete {treasures::*}
+            message "&c&l보물 보상 리스트 모두 제거됨"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faMoneyAdd:
+    trigger:
+        if player is op:
+            add player's held item to {money::*}
+            message "&e&l금전 보상 리스트에 추가됨: &f&o%player's held item%"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faMoneyList:
+    trigger:
+        if player is op:
+            message "&a&l금전 보상 리스트"
+            loop {money::*}:
+                message "%loop-value%"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faMoneyDelete:
+    trigger:
+        if player is op:
+            delete {money::*}
+            message "&c&l금전 보상 리스트 모두 제거됨"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faDropAllItems:
+    trigger:
+        if player is op:
+            message "&a&l낚시로 출현가능한 모든 아이템을 드롭합니다."
+            drop {cod::*} at player
+            drop {salmon::*} at player
+            drop {tropical::*} at player
+            drop {pufferfish::*} at player
+            drop {squid::*} at player
+            drop {mussel::*} at player
+            drop {books::*} at player
+            drop {treasures::*} at player
+            drop {money::*} at player
+            drop {voidfish} at player
+            drop {voideel} at player
+            drop {seaGrapes} at player
+            drop {banger} at player
+            drop {baguette} at player
+        else:
+            message "&c&oOP required"
+
+
+
+command /faContestRewardAdd:
+    trigger:
+        if player is op:
+            add player's held item to {contestReward::*}
+            message "&e&l낚시대회 보상 추가됨: &f&o%player's held item%"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faContestRewardList:
+    trigger:
+        if player is op:
+            message "&a&l낚시대회 보상 리스트"
+            loop {contestReward::*}:
+                message "%loop-value%"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faContestRewardRemove:
+    trigger:
+        if player is op:
+            delete {contestReward::*}
+            message "&c&l낚시대회 보상 제거됨"
+        else:
+            message "&c&oOP required"
+
+
+
+command /faContestForceStart:
+    trigger:
+        if command sender is op or console:
+            if {contestReward::*} is set:
+                if {contestOpen} is not set:
+                    set {contestOpen} to true
+
+                    set {contestCurrentReward} to random element of {contestReward::*}
+                    
+                    if chance of 95%:
+                        set {contestRemaining} to 2 * random integer between 5 and 8
+                        set {contestFish} to random element of {cod::normal}, {cod::fresh}, {salmon::normal}, {salmon::fresh}, {pufferfish::normal}, {squid::normal}, {mussel::normal}, {voidfish} and {seaGrapes}
+                    else:
+                        set {contestRemaining} to 2 * random integer between 10 and 15
+                        set {contestFish} to random element of {voideel}, {banger}, {cod::unique}, {salmon::unique}, {pufferfish::unique}, {tropical::unique}, {squid::unique}, {mussel::unique}, {baguette}, {pufferfish::fresh}, {tropical::normal}, {tropical::fresh}, {squid::fresh} and {mussel::fresh}
+
+                    broadcast "&e&l[ 낚시 대회 ]"
+                    broadcast " "
+                    broadcast "&a&o%{contestRemaining}%&e&l분 안에 &r%name of {contestFish}%&r&e&l 을(를) 가장 많이 잡은 사람이 우승"
+                    broadcast "&e&o보상: &r%name of {contestCurrentReward}% &e&oX %item amount of {contestCurrentReward}%"
+
+                    play sound "block.note_block.pling" with volume 1 and pitch 2 for all players
+                else:
+                    message "&c&o낚시 대회가 이미 진행중입니다."
+            else:
+                message "&c&o보상이 설정되지 않았습니다."
+        else:
+            message "&c&oOP required"
+
+
+
+command /faContestForceStop:
+    trigger:
+        if player is op:
+            delete {contestOpen}
+            delete {contestRemaining}
+            delete {contestFish}
+            delete {contestCurrentReward}
+            delete {contestLeadPlayer}
+            delete {contestPlayerGoal::*}
+            broadcast "&c&l낚시 대회가 강제 종료되었습니다."
+        else:
+            message "&c&oOP required"
+
+
+
+command /faDropCoupon:
+    trigger:
+        if player is op:
+            drop {contestStartCoupon} at player
+            message "&a&l낚시 대회 시작 쿠폰을 드랍합니다."
+        else:
+            message "&c&oOP required"
